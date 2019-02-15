@@ -49,13 +49,16 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.Vi
 
         public void bind(final Student student) {
             swAttendance.setText(student.getName());
+            swAttendance.setChecked(student.present());
             swAttendance.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    student.togglePresent(1);
-                    Toast.makeText(context, student.getName() + ": " +
-                            (student.presentOn(1) ? "present!" : "absent."),
-                            Toast.LENGTH_SHORT).show();
+                    if (buttonView.isPressed()) {
+                        student.togglePresent();
+                        Toast.makeText(context, student.getName() + ":  " +
+                                        (student.present() ? "Present!" : "Absent."),
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }

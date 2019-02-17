@@ -26,7 +26,7 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new ViewHolder(LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.rv_attendance_row, viewGroup, false));
+                .inflate(R.layout.rv_attendance, viewGroup, false));
     }
 
     @Override

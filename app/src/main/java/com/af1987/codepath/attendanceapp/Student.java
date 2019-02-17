@@ -73,7 +73,7 @@ public class Student extends RealmObject {
     }
 
     static class Group extends ArrayList<Student> {
-//        static final int MAX_SIZE = 5;
+        static final int MAX_SIZE = 5;
 
         private Group (Student s) {
             super();
@@ -83,6 +83,7 @@ public class Student extends RealmObject {
         static List<Group> makeGroups(RealmResults<Student> allStudents) {
             List<Student> students = allStudents.where().equalTo("attendance", true)
                     .sort("experience", Sort.DESCENDING).findAll();
+            Log.d("_AF", "makeGroups: Students present:  " + students.size());
             students = Arrays.asList(students.toArray(new Student[]{}));
             final int TOTAL_PRESENT = students.size(), MIN_SIZE = minGroupSize(TOTAL_PRESENT),
                     NUM_GROUPS = TOTAL_PRESENT / MIN_SIZE;
@@ -105,7 +106,6 @@ public class Student extends RealmObject {
 //            return /* size() < MAX_SIZE  && */ super.add(student);
 //        }
 
-
         @NonNull
         @Override
         public String toString() {
@@ -119,8 +119,8 @@ public class Student extends RealmObject {
                     .toString();
         }
 
-        private static int minGroupSize(int numStudents) {
-            return numStudents > 9 ? Math.round(numStudents / 10f) : 1;
+        private static int minGroupSize(int n) {
+            return n > 9 ? Math.min(n / 10, MAX_SIZE - 1) : 1;
         }
     }
 

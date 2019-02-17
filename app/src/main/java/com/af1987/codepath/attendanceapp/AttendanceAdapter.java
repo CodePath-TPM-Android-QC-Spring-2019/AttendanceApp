@@ -6,14 +6,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.List;
 
-public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.ViewHolder> {
+import io.realm.Realm;
 
+public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.ViewHolder> {
     private List<Student> students;
     private Context context;
 
@@ -50,15 +50,15 @@ public class AttendanceAdapter extends RecyclerView.Adapter<AttendanceAdapter.Vi
         public void bind(final Student student) {
             swAttendance.setText(student.getName());
             swAttendance.setChecked(student.present());
-            swAttendance.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (buttonView.isPressed()) {
+            swAttendance.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (buttonView.isPressed()) {
+                    Realm.getDefaultInstance().executeTransaction(r -> {
                         student.togglePresent();
-                        Toast.makeText(context, student.getName() + ":  " +
-                                        (student.present() ? "Present!" : "Absent."),
-                                Toast.LENGTH_SHORT).show();
-                    }
+                        r.insertOrUpdate(student);
+                    });
+                    Toast.makeText(context, student.getName() + ":  " +
+                                    (student.present() ? "Present!" : "Absent."),
+                                    Toast.LENGTH_SHORT).show();
                 }
             });
         }

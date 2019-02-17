@@ -1,25 +1,89 @@
 package com.af1987.codepath.attendanceapp;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
-import java.util.List;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
-
-    List<Student> students;
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    RealmResults<Student> students;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Realm.init(this);
         setContentView(R.layout.activity_main);
         RecyclerView rvAttendance = findViewById(R.id.rvAttendance);
-        students = Student.allStudents();
+        students = Student.allStudents(this);
         AttendanceAdapter adapter = new AttendanceAdapter(this, students);
         rvAttendance.setLayoutManager(new LinearLayoutManager(this));
         rvAttendance.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public void exportToCSV(MenuItem item) {
+        verifyStoragePermissions();
+        if (!isExternalStorageWritable()) {
+            Toast.makeText(this, "External storage is busy, please try again later.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        File file = getPublicStorageDir();
+        try {
+            FileUtils.writeLines(file, students);
+            Toast.makeText(this, "Attendance file created successfully at: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {Log.e("_AF", "exportToCSV: " + e.getMessage());}
+    }
+
+    public void verifyStoragePermissions() {
+        int permission = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE);
+        }
+    }
+
+    private static boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    private static File getPublicStorageDir() {
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), "attendance.csv");
+        if (!file.mkdirs())
+            Log.e("_AF", "Directory not created.");
+        return file;
+    }
+
+    public void launchGroupActivity(MenuItem item) {
+        //todo:  Animate groups in a new activity
+        Student.Group.makeGroups(students);
     }
 }

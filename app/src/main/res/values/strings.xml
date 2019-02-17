@@ -1,4 +1,67 @@
 <resources>
     <string name="app_name">AttendanceApp</string>
-    <string name="app_title">QC CodePath Android 2019</string>
+    <string name="app_title">Spring `19</string>
+
+    <string-array name="student_list">
+        <item>Guohua Zhang</item>
+        <item>Tahfimul Latif</item>
+        <item>Elija Agyapong</item>
+        <item>Jeffrey Zhao</item>
+        <item>Jamil Jalal</item>
+        <item>Josh Improgo</item>
+        <item>Sparky Evangelista</item>
+        <item>Ung Jae Yun</item>
+        <item>Bakhtiyorjon Rasulov</item>
+        <item>Xiaochuan Fang</item>
+        <item>Asim Shariff</item>
+        <item>Brian Aguilar</item>
+        <item>Dweej Patel</item>
+        <item>Mark Xia</item>
+        <item>Sudipta Saha</item>
+        <item>Muneeb Khawaja</item>
+        <item>Jefferson Wong</item>
+        <item>Eduardo Escamilla</item>
+        <item>Jonas Improgo</item>
+        <item>Isaac Gordon</item>
+        <item>Mark Abramov</item>
+        <item>Ting Ting Ye</item>
+        <item>Shmuel Halbfinger</item>
+        <item>Joel George</item>
+        <item>Tanzim Rayhan Ali</item>
+        <item>Abdullah A Mamun</item>
+        <item>Karan Vadhan</item>
+        <item>Yonah Greenblatt</item>
+        <item>Mohammed Chowdhury</item>
+        <item>Rojan K C</item>
+        <item>Eleftherios Troullouris</item>
+        <item>Paul Alarcon</item>
+        <item>Danish Bokhari</item>
+        <item>Bibi Hassan</item>
+        <item>Francis Lam</item>
+        <item>Ariel Moskowitz</item>
+        <item>Bryan Lange</item>
+        <item>Amit Charran</item>
+        <item>Linda Cai</item>
+        <item>Grissel Lopez</item>
+        <item>Han Dao</item>
+        <item>Matthew Cattaneo</item>
+        <item>Deep Biswas</item>
+        <item>Savas Sotrillis</item>
+        <item>Francis Gold Sy</item>
+        <item>Kevin Chen</item>
+        <item>Chen Wang</item>
+        <item>Mehak Channi</item>
+        <item>Steven Bedoya</item>
+        <item>Amin Essafi</item>
+        <item>Harmandeep Singh</item>
+        <item>Xianglan Shen</item>
+        <item>Minas Karagiorgis</item>
+        <item>Elias Haile</item>
+        <item>Leonardo Suarez</item>
+        <item>Afm Ehsan</item>
+        <item>Claudia Bandali</item>
+        <item>Vitoria Tai</item>
+        <item>Srijana Tamang</item>
+        <item>Justin Boateng</item>
+    </string-array>
 </resources>

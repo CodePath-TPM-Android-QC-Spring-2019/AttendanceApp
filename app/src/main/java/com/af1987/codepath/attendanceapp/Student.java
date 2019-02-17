@@ -1,13 +1,34 @@
 package com.af1987.codepath.attendanceapp;
 
-import java.util.Arrays;
-import java.util.List;
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
 
-public class Student {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+
+import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.Sort;
+import io.realm.annotations.PrimaryKey;
+import io.realm.exceptions.RealmException;
+
+public class Student extends RealmObject {
+
+    @PrimaryKey
+    private String id;
 
     private String name;
     private boolean attendance;
     private int experience;
+
+    public Student() {}
 
     public Student(String name) {
         this(name,1);
@@ -17,6 +38,7 @@ public class Student {
         this.name = name;
         this.attendance = false;
         this.experience = experience;
+        this.id = UUID.randomUUID().toString();
     }
 
     public String getName() {return name;}
@@ -25,46 +47,81 @@ public class Student {
     public boolean present() {return attendance;}
     public int getExperience() {return experience;}
     public void setExperience(int experience) {this.experience = experience;}
+    public String getId() {return id;}
 
-    public static List<Student> allStudents(){
-        return Arrays.asList(
-                new Student("Alex Feaser"),
-                new Student("Logan Le"),
-                new Student("Jia Yu Lun"),
-                new Student("Claudia Martinez"),
-                new Student("Alex Feaser"),
-                new Student("Logan Le"),
-                new Student("Jia Yu Lun"),
-                new Student("Claudia Martinez"),
-                new Student("Alex Feaser"),
-                new Student("Logan Le"),
-                new Student("Jia Yu Lun"),
-                new Student("Claudia Martinez"),
-                new Student("Alex Feaser"),
-                new Student("Logan Le"),
-                new Student("Jia Yu Lun"),
-                new Student("Claudia Martinez"),
-                new Student("Alex Feaser"),
-                new Student("Logan Le"),
-                new Student("Jia Yu Lun"),
-                new Student("Claudia Martinez"),
-                new Student("Alex Feaser"),
-                new Student("Logan Le"),
-                new Student("Jia Yu Lun"),
-                new Student("Claudia Martinez"),
-                new Student("Alex Feaser"),
-                new Student("Logan Le"),
-                new Student("Jia Yu Lun"),
-                new Student("Claudia Martinez"),
-                new Student("Alex Feaser"),
-                new Student("Logan Le"),
-                new Student("Jia Yu Lun"),
-                new Student("Claudia Martinez")
-        );
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format(Locale.US,"%s,%s,%d", id, name, attendance ? 1 : 0);
     }
 
-    public static class Group {
+    public static RealmResults<Student> allStudents(Context context) {
+        RealmResults<Student> students = null;
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            students = realm.where(Student.class).findAll();
+            if (students == null || students.size() == 0) {
+                Log.d("_AF", "allStudents: Populating...");
+                List<Student> list = new ArrayList<>();
+                for (String s : context.getResources().getStringArray(R.array.student_list))
+                    list.add(new Student(s));
+                realm.executeTransaction(r -> r.insertOrUpdate(list));
+            }
+        } catch (RealmException ex) {Log.e("_AF", "allStudents: " + ex.getMessage());}
+        Log.d("_AF", "allStudents: From realm...");
+        return students != null ? students.sort("name") : null;
+    }
 
+    static class Group extends ArrayList<Student> {
+//        static final int MAX_SIZE = 5;
+
+        private Group (Student s) {
+            super();
+            add(s);
+        }
+
+        static List<Group> makeGroups(RealmResults<Student> allStudents) {
+            List<Student> students = allStudents.where().equalTo("attendance", true)
+                    .sort("experience", Sort.DESCENDING).findAll();
+            students = Arrays.asList(students.toArray(new Student[]{}));
+            final int TOTAL_PRESENT = students.size(), MIN_SIZE = minGroupSize(TOTAL_PRESENT),
+                    NUM_GROUPS = TOTAL_PRESENT / MIN_SIZE;
+            List<Group> groups = new ArrayList<>(NUM_GROUPS);
+            for (int i = 0; i < NUM_GROUPS; ++i) {
+                Student student = students.get(0);
+                groups.add(new Group(student));
+                students = students.subList(1, students.size());
+            }
+            Collections.shuffle(students);
+            int i = -1;
+            for (Student s : students)
+                groups.get(i = (i + 1) % NUM_GROUPS).add(s);
+            Log.d("_AF", "makeGroups:\n" + TextUtils.join("\n", groups));
+            return groups;
+        }
+
+//        @Override
+//        public boolean add(Student student) {
+//            return /* size() < MAX_SIZE  && */ super.add(student);
+//        }
+
+
+        @NonNull
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+//            sb.append("--[ ");
+            for (Student s : this)
+                sb.append(s.name).append(" / ");
+            sb.setLength(sb.length() - 3);
+            return sb
+//                    .append(" ]--")
+                    .toString();
+        }
+
+        private static int minGroupSize(int numStudents) {
+            return numStudents > 9 ? Math.round(numStudents / 10f) : 1;
+        }
     }
 
 }

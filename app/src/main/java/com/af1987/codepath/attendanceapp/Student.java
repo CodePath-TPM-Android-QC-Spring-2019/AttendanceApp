@@ -25,7 +25,7 @@ public class Student extends RealmObject {
     private String id;
 
     private String name;
-    private boolean attendance;
+    private boolean present;
     private int experience;
 
     public Student() {}
@@ -36,15 +36,16 @@ public class Student extends RealmObject {
 
     public Student(String name, int experience) {
         this.name = name;
-        this.attendance = false;
+        this.present = false;
         this.experience = experience;
         this.id = UUID.randomUUID().toString();
     }
 
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
-    public void togglePresent() {attendance = !attendance;}
-    public boolean present() {return attendance;}
+    public void togglePresent() {
+        present = !present;}
+    public boolean present() {return present;}
     public int getExperience() {return experience;}
     public void setExperience(int experience) {this.experience = experience;}
     public String getId() {return id;}
@@ -52,7 +53,7 @@ public class Student extends RealmObject {
     @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.US,"%s,%s,%d", id, name, attendance ? 1 : 0);
+        return String.format(Locale.US,"%s,%s,%d", id, name, present ? 1 : 0);
     }
 
     public static RealmResults<Student> allStudents(Context context) {
@@ -81,7 +82,7 @@ public class Student extends RealmObject {
         }
 
         static List<Group> makeGroups(RealmResults<Student> allStudents) {
-            List<Student> students = allStudents.where().equalTo("attendance", true)
+            List<Student> students = allStudents.where().equalTo("present", true)
                     .sort("experience", Sort.DESCENDING).findAll();
             Log.d("_AF", "makeGroups: Students present:  " + students.size());
             students = Arrays.asList(students.toArray(new Student[]{}));

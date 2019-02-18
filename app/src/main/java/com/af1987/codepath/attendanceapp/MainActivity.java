@@ -18,6 +18,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -37,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         RecyclerView rvAttendance = findViewById(R.id.rvAttendance);
         students = Student.allStudents(this);
+        students.addChangeListener((students, changeSet) -> {
+            int total = students.size(), present =
+                    students.where().equalTo("present", true).findAll().size();
+            getSupportActionBar().setTitle(
+                    String.format(Locale.US, "Present: %d/%d", present, total));
+        });
         AttendanceAdapter adapter = new AttendanceAdapter(this, students);
         rvAttendance.setLayoutManager(new LinearLayoutManager(this));
         rvAttendance.setAdapter(adapter);

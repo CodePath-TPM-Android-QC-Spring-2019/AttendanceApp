@@ -76,10 +76,10 @@ public class Student extends RealmObject {
     static class Group extends ArrayList<Student> {
         static final int MAX_SIZE = 5;
 
-        private Group (Student s) {
-            super();
-            add(s);
-        }
+//        private Group (Student s) {
+//            super();
+//            add(s);
+//        }
 
         static List<Group> makeGroups(RealmResults<Student> allStudents) {
             List<Student> students = allStudents.where().equalTo("present", true)
@@ -88,16 +88,18 @@ public class Student extends RealmObject {
             students = Arrays.asList(students.toArray(new Student[]{}));
             final int TOTAL_PRESENT = students.size(), MIN_SIZE = minGroupSize(TOTAL_PRESENT),
                     NUM_GROUPS = TOTAL_PRESENT / MIN_SIZE;
-            List<Group> groups = new ArrayList<>(NUM_GROUPS);
-            for (int i = 0; i < NUM_GROUPS; ++i) {
-                Student student = students.get(0);
-                groups.add(new Group(student));
-                students = students.subList(1, students.size());
+            List<Group> groups = new ArrayList<>();
+            for (int i = 0; i < NUM_GROUPS; ++i)
+                groups.add(new Group());
+            while (!students.isEmpty()) {
+                List<Student> batch = students.subList(0,
+                        students.size() < NUM_GROUPS ? students.size() : NUM_GROUPS);
+                students = students.subList(batch.size(), students.size());
+                Collections.shuffle(batch);
+                int i = -1;
+                for (Student s : batch)
+                    groups.get(i = (i + 1) % NUM_GROUPS).add(s);
             }
-            Collections.shuffle(students);
-            int i = -1;
-            for (Student s : students)
-                groups.get(i = (i + 1) % NUM_GROUPS).add(s);
             Log.d("_AF", "makeGroups:\n" + TextUtils.join("\n", groups));
             return groups;
         }
@@ -120,8 +122,13 @@ public class Student extends RealmObject {
                     .toString();
         }
 
-        private static int minGroupSize(int n) {
-            return n > 9 ? Math.min(n / 10, MAX_SIZE - 1) : 1;
+        private static int minGroupSize(
+                int n
+        ) {
+            return
+//                    n > 9 ? Math.min(n / 10,
+                            n < MAX_SIZE - 1 ? n : MAX_SIZE - 1;
+//                    ) : 1;
         }
     }
 

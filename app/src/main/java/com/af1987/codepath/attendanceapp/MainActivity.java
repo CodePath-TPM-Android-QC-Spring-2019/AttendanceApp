@@ -109,11 +109,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static File getPublicStorageDir() {
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOCUMENTS), "attendance.csv");
-        if (!file.mkdirs())
-            Log.e("_AF", "Directory not created.");
-        return file;
+        File dir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS);
+        return new File(dir, "attendance.csv");
     }
 
     public void launchGroupActivity(MenuItem item) {

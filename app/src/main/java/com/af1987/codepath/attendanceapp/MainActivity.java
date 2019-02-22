@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     RealmResults<Student> students;
+    AttendanceAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +46,33 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(
                     String.format(Locale.US, "Present: %d/%d", present, total));
         });
-        AttendanceAdapter adapter = new AttendanceAdapter(this, students);
+        adapter = new AttendanceAdapter(this, students);
         rvAttendance.setLayoutManager(new LinearLayoutManager(this));
         rvAttendance.setAdapter(adapter);
+        createResetListener();
+    }
+
+    private void createResetListener() {
+        findViewById(R.id.ivCodePath).setOnLongClickListener(view -> {
+            new AlertDialog.Builder(this)
+                    .setMessage("Set all students to absent?")
+                    .setPositiveButton("Reset", (dialog, i) -> new AlertDialog.Builder(this)
+                            .setMessage("Are you sure??")
+                            .setPositiveButton("Reset them damn", (dialog2, i2) -> {
+                                dialog.dismiss();
+                                Realm.getDefaultInstance().executeTransaction(realm -> {
+                                    for (Student s : students)
+                                        s.setPresent(false);
+                                    realm.insertOrUpdate(students);
+                                });
+                                adapter.notifyDataSetChanged();
+                            })
+                            .setCancelable(true)
+                            .create().show())
+                    .setCancelable(true)
+                    .create().show();
+            return true;
+        });
     }
 
     @Override

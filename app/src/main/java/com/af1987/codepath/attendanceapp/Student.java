@@ -73,6 +73,10 @@ public class Student extends RealmObject {
         return students != null ? students.sort("name") : null;
     }
 
+    public void setPresent(boolean b) {
+        this.present = b;
+    }
+
     static class Group extends ArrayList<Student> {
         static final int MAX_SIZE = 5;
 

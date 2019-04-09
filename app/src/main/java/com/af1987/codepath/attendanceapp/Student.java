@@ -43,8 +43,7 @@ public class Student extends RealmObject {
 
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
-    public void togglePresent() {
-        present = !present;}
+    public void togglePresent() {present = !present;}
     public boolean present() {return present;}
     public int getExperience() {return experience;}
     public void setExperience(int experience) {this.experience = experience;}
